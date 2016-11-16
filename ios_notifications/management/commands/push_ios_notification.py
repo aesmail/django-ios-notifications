@@ -11,41 +11,53 @@ from ios_notifications.models import Notification, APNService
 
 class Command(BaseCommand):
     help = 'Create and immediately send a push notification to iOS devices'
-    option_list = BaseCommand.option_list + (
-        make_option('--message',
-                    help='The main message to be sent in the notification',
-                    dest='message',
-                    default=''),
-        make_option('--badge',
-                    help='The badge number of the notification',
-                    dest='badge',
-                    default=None),
-        make_option('--sound',
-                    help='The sound for the notification',
-                    dest='sound',
-                    default=''),
-        make_option('--service',
-                    help='The id of the APN Service to send this notification through',
-                    dest='service',
-                    default=None),
-        make_option('--extra',
-                    help='Custom notification payload values as a JSON dictionary',
-                    dest='extra',
-                    default=None),
-        make_option('--persist',
+    def add_arguments(self, parser):
+        parser.add_argument('--message',
+            help='The main message to be sent in the notification',
+            action='store',
+            dest='message',
+            default='')
+        
+        parser.add_argument('--badge',
+            help='The badge number of the notification',
+            action='store',
+            dest='badge',
+            default=None)
+        
+        parser.add_argument('--sound',
+            help='The sound for the notification',
+            action='store',
+            dest='sound',
+            default='')
+        
+        parser.add_argument('--service',
+            help='The id of the APN Service to send this notification through',
+            action='store',
+            dest='service',
+            default=None)
+        
+        parser.add_argument('--extra',
+            help='Custom notification payload values as a JSON dictionary',
+            action='store',
+            dest='extra',
+            default=None)
+        
+        parser.add_argument('--persist',
                     help='Save the notification in the database after pushing it.',
                     action='store_true',
                     dest='persist',
-                    default=None),
-        make_option('--no-persist',
+                    default=None)
+        
+        parser.add_argument('--no-persist',
                     help='Prevent saving the notification in the database after pushing it.',
                     action='store_false',
-                    dest='persist'),  # Note: same dest as --persist; they are mutually exclusive
-        make_option('--batch-size',
+                    dest='persist')  # Note: same dest as --persist; they are mutually exclusive
+        
+        parser.add_argument('--batch-size',
                     help='Notifications are sent to devices in batches via the APN Service. This controls the batch size. Default is 100.',
+                    action='store',
                     dest='chunk_size',
-                    default=100),
-    )
+                    default=100)
 
     def handle(self, *args, **options):
         if options['service'] is None:
