@@ -6,7 +6,7 @@ from django.http import HttpResponseNotAllowed, QueryDict
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.utils.decorators import method_decorator
 
 from .models import Device
@@ -101,7 +101,7 @@ class DeviceResource(BaseResource):
             try:
                 user_ids = request.PUT.getlist('users')
                 device.users.remove(*[u.id for u in device.users.all()])
-                device.users.add(*User.objects.filter(id__in=user_ids))
+                device.users.add(*get_user_model().objects.filter(id__in=user_ids))
             except (ValueError, IntegrityError) as e:
                 return JSONResponse({'error': e.message}, status=400)
             del request.PUT['users']
